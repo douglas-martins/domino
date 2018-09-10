@@ -46,7 +46,7 @@ public class DominoPlayer {
      * @param rock
      */
     public void addPlayerRock (DominoRock rock) {
-        playerRocks[rocksCounter++] = rock;
+        playerRocks[rocksCounter++] = rock; //TODO: out off bounds quando vai comprar uma peça do monte
     }
 
     /**
@@ -58,13 +58,33 @@ public class DominoPlayer {
         rocksCounter--;
     }
 
-    public DominoRock findAndReturnDominoRock (int beginTable, int endTable) {
-        for (DominoRock rock : playerRocks) {
-            for (int i = 0; i < 2; i++) {
-                if (rock.getRockNumbers()[i] == beginTable ||
-                    rock.getRockNumbers()[i] == endTable) {
-                    return rock;
-                }
+    /**
+     * Procura, na mao do jogador, e retorna uma pedra que possa ser colocada na mesa do jogo
+     * @param dominoRound
+     * @return retorna a pedra que pode ser jogada (null se não existir uma pedra)
+     */
+    public DominoRock findAndReturnDominoRock (DominoRound dominoRound) {
+        DominoRock returnRock = null;
+        if (dominoRound.getGameTable()[0].getRockNumbers()[0] > 6) {
+            returnRock = playerRocks[getBiggerDominoRockIndex()];
+            removePlayerRock(getBiggerDominoRockIndex());
+            return returnRock;
+        }
+        for (int i = 0; i < rocksCounter; i++) {
+            if (dominoRound.isDominoRockFitOnGameTable(playerRocks[i])) {
+                returnRock = playerRocks[i];
+                removePlayerRock(i);
+                return returnRock;
+            }
+        }
+        for (int i = 0; i < rocksCounter; i++) {
+            playerRocks[i].invertDominoRockNumbers();
+            if (dominoRound.isDominoRockFitOnGameTable(playerRocks[i])) {
+                returnRock = playerRocks[i];
+                removePlayerRock(i);
+                return returnRock;
+            } else {
+                playerRocks[i].invertDominoRockNumbers();
             }
         }
         return null;
@@ -74,7 +94,7 @@ public class DominoPlayer {
      * Retorna a pedra de maior valor (conforme a regra do jogo Domino) do jogador
      * @return rockNumbers
      */
-    public int[] getBiggerDominoRock () { // TODO: refatorar esse código
+    public int getBiggerDominoRockIndex () { // TODO: refatorar esse código
         int rockIndex = 0;
         int rockIndexDif = 0;
         int rockNumber = -1;
@@ -92,6 +112,6 @@ public class DominoPlayer {
                 }
             }
         }
-        return rockNumber > 0 ? playerRocks[rockIndex].getRockNumbers() : playerRocks[rockIndexDif].getRockNumbers();
+        return rockNumber > 0 ? rockIndex : rockIndexDif;
     }
 }

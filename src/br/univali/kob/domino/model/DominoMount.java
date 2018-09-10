@@ -34,6 +34,10 @@ public class DominoMount {
         dominoRocksCounter--;
     }
 
+    /**
+     * Compra uma pedra do monte
+     * @return retorna a pedra comprada (null se não exister mais pedras no monte
+     */
     public DominoRock drawDominoRock () {
         return dominoRocksCounter > 0 ? gameRocks[dominoRocksCounter--] : null;
     }

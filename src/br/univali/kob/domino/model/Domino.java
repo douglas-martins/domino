@@ -16,9 +16,9 @@ public class Domino {
         dominoMount = new DominoMount();
         dominoRound = new DominoRound();
         players = new DominoPlayer[numberOfPlayers];
-        for (int i = 0; i < numberOfPlayers; i++) { // TODO: substituir por foreach
+        for (int i = 0; i < numberOfPlayers; i++) {
             players[i] = new DominoPlayer();
-            players[i].setName("Jogador " + String.valueOf(i));
+            players[i].setName(" ");
         }
         distributePlayersDominoRocks();
         setPlayerIndexStart();
@@ -33,58 +33,73 @@ public class Domino {
     }
 
     /**
-     * Retorna o valor do index que começa o jogo
-     * @return startPlayersIndex
-     */
-    public int getStartPlayerIndex () { return startPlayerIndex; }
-
-
-    /**
      * Função para simluar o loop do game
      */
     public void gameLoop () {
         int i = startPlayerIndex;
-        int numberOfRocksDrawed = 0;
+        int numberOfRocksDrawer = 0;
         int gameTableIndex = 0;
-        while (!isGameOver() && i <= numberOfPlayers) {
-            numberOfRocksDrawed = 0;
-            numberOfPlayersPass = 0;
-            DominoRock rock = players[i].findAndReturnDominoRock(0, dominoRound.getGameTableCounter());
+        while (!isGameOver()) {
+            numberOfRocksDrawer = 0;
+            if (i == startPlayerIndex) numberOfPlayersPass = 0;
+            DominoRock rock = players[i].findAndReturnDominoRock(dominoRound);
             if (rock == null) {
                 do {
                     rock = dominoMount.drawDominoRock();
                     if (rock != null) {
-                        numberOfRocksDrawed++;
+                        numberOfRocksDrawer++;
                         players[i].addPlayerRock(rock);
-                        rock = players[i].findAndReturnDominoRock(0, dominoRound.getGameTableCounter());
+                        rock = players[i].findAndReturnDominoRock(dominoRound);
                     }
                 } while (dominoMount.getDominoRocksCounter() > 0 && rock == null);
                 if (rock == null) {
                     numberOfPlayersPass++;
                 } else {
                     gameTableIndex = dominoRound.addRockToGameTable(rock);
-                    players[i].removePlayerRock(players[i].getRocksCounter());
                 }
             } else {
                 gameTableIndex = dominoRound.addRockToGameTable(rock);
                 if (players[i].getRocksCounter() < 1) {
-                    //TODO: acabar jogo com players[i] como vencedor
                     playerWinner = players[i];
                 }
             }
             int gameRound = dominoRound.getGameRound();
-            dominoRound.setGameRound(gameRound++);
-            if (i >= numberOfPlayers) {
-                i = 0;
-            } else {
+            gameRound++;
+            dominoRound.setGameRound(gameRound);
+            debugDominoSimulate(players[i], rock, numberOfRocksDrawer, gameTableIndex);
+            if (i < numberOfPlayers - 1) {
                 i++;
+            } else {
+                i = 0;
             }
-            debugDominoSimulate(players[i], rock, numberOfRocksDrawed, gameTableIndex);
         }
     }
 
+    /**
+     * Retorna o estado atual do jogo
+     * @return boolean com estado do jogo
+     */
     public boolean isGameOver () {
         return numberOfPlayersPass >= numberOfPlayers || playerWinner != null;
+    }
+
+    private int getWinner () {
+        if (playerWinner != null) {
+            return 0;
+        }
+
+        int minPoints = 100;
+        for (DominoPlayer player : players) {
+            int sum = 0;
+            for (int i = 0; i < player.getRocksCounter(); i++) {
+                sum += player.getPlayerRocks()[i].getRocksNumberSum();
+            }
+            if (minPoints > sum) {
+                minPoints = sum;
+                playerWinner = player;
+            }
+        }
+        return minPoints;
     }
 
     private void distributePlayersDominoRocks () {
@@ -98,59 +113,55 @@ public class Domino {
                 indexRocks++;
             }
         }
-
-//        // Debug jogadores e suas pedras
-//        for (DominoPlayer player : players) {
-//            System.out.println(player.getName());
-//            for (int i = 0; i < player.getPlayerRocks().length; i++) {
-//                System.out.print("Peça " + i + ":");
-//                System.out.print("[" + player.getPlayerRocks()[i].getRockNumbers()[0] + ", " +
-//                        player.getPlayerRocks()[i].getRockNumbers()[1] + "]");
-//                System.out.println();
-//            }
-//        }
-//
-//        // Debug pedras que restaram no monte
-//        System.out.println("TAMANHO: " + dominoMount.getDominoRocksCounter());
-//        System.out.println("{ SOBRAM AS PEDRAS PARA COMPRA: ");
-//        for (int i = 0; i < dominoMount.getDominoRocksCounter(); i++) {
-//            System.out.print("[" + dominoMount.getDominoRocks()[i].getRockNumbers()[0] + ", " +
-//                    dominoMount.getDominoRocks()[i].getRockNumbers()[1] + "] / ");
-//        }
-//        System.out.println();
-//        System.out.println("}");
     }
 
     private void setPlayerIndexStart () {
         DominoPlayer bigger = players[0];
         for (int i = 1; i < numberOfPlayers; i++) {
-            if (players[i].getBiggerDominoRock()[0] > bigger.getBiggerDominoRock()[0]) {
+            if (players[i].getPlayerRocks()[players[i].getBiggerDominoRockIndex()].getRockNumbers()[0] >
+                    bigger.getPlayerRocks()[bigger.getBiggerDominoRockIndex()].getRockNumbers()[0]) {
                 bigger = players[i];
                 startPlayerIndex = i;
             }
         }
-        // System.out.println("Started index: " + startPlayerIndex);
     }
 
-    private void debugDominoSimulate (DominoPlayer player, DominoRock rock, int numberOfRocksDrawed, int gameTableIndex) {
+    private void debugDominoSimulate (DominoPlayer player, DominoRock rock, int numberOfRocksDrawer, int gameTableIndex) {
         System.out.println("Rodada: " + dominoRound.getGameRound());
         System.out.println("Jogador: " + player.getName());
-        System.out.println("Compradas: " + numberOfRocksDrawed);
+        System.out.print("Mão: ");
+        for (int i = 0; i < player.getRocksCounter(); i++) {
+            System.out.print("[" + player.getPlayerRocks()[i].getRockNumbers()[0] + ", " + player.getPlayerRocks()[i].getRockNumbers()[1] + "] ");
+        }
+        System.out.println();
+        System.out.println("Compradas: " + numberOfRocksDrawer);
         System.out.print("Pedra usada: ");
         if (rock != null){
-            System.out.print("[" + rock.getRockNumbers()[0] + ", " + rock.getRockNumbers()[1] + "]");
+            System.out.print("[" + rock.getRockNumbers()[0] + ", " + rock.getRockNumbers()[1] + "] ");
             if (gameTableIndex > 0) {
                 System.out.println("(lado 1)");
             } else {
                 System.out.println("(lado 0)");
             }
+        } else {
+            System.out.println();
         }
         System.out.print("Tabuleiro: ");
         for (int i = 0; i < dominoRound.getGameTableCounter(); i++) {
+            if (dominoRound.getGameTable()[i].getRockNumbers()[0] > 6) continue;
             System.out.print("[" + dominoRound.getGameTable()[i].getRockNumbers()[0]
                     + ", " + dominoRound.getGameTable()[i].getRockNumbers()[1] + "] ");
         }
-        if (rock != null) System.out.println("--> " + "[" + rock.getRockNumbers()[0] + ", " + rock.getRockNumbers()[1] + "]");
+        if (rock != null) System.out.println(" --> " + rock.getRockNumbers()[0] + ", " + rock.getRockNumbers()[1] + " ");
+        System.out.println();
         System.out.println("###################################################");
+        if (playerWinner != null) {
+            System.out.println("Jogo acabou! " + playerWinner.getName() + " jogou todas suas pedras!");
+        } else if (numberOfPlayersPass >= numberOfPlayers) {
+            int points = getWinner();
+            System.out.println("Ninguém acabou com suas peças, porém não existe mais possibilidade de jogadas ou compra de pedras.\n" +
+                    "O jogador " + playerWinner.getName() + " ganhou com a menor pontuação entre os outros jogadores.\n" +
+                    "Sua pontuação foi de " + points + " pontos!");
+        }
     }
 }

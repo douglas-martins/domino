@@ -21,4 +21,18 @@ public class DominoRock {
      * @return soma dos valores da pedra
      */
     public int getRocksNumberSum () { return getRockNumbers()[0] + getRockNumbers()[1]; }
+
+    /**
+     * Inverte os números da pedra
+     */
+    public void invertDominoRockNumbers () {
+        invertNumbers();
+    }
+
+    private void invertNumbers () {
+        int helper = rockNumbers[0];
+        rockNumbers[0] = rockNumbers[1];
+        rockNumbers[1] = helper;
+    }
+
 }

@@ -32,7 +32,7 @@ public class ArraysHelper {
     }
 
     /**
-     * Remove um elemento de um array, colocando este elemento como null e dmininuindo a referencia do tamanho do arry
+     * Remove um elemento de um array, colocando este elemento como null e diminuindo a referencia do tamanho do array
      * @param array
      * @param elementIndex
      * @param arrayLength
@@ -45,7 +45,6 @@ public class ArraysHelper {
             newArray[i] = newArray[i + 1];
         }
         newArray[arrayLength - 1] = null;
-
         return newArray;
     }
 }
