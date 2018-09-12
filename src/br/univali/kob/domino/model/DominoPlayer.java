@@ -6,7 +6,7 @@ public class DominoPlayer {
     private int rocksCounter = 0;
 
     public DominoPlayer () {
-        playerRocks = new DominoRock[7];
+        playerRocks = new DominoRock[21];
     }
 
     /**
@@ -45,9 +45,7 @@ public class DominoPlayer {
      * Adiciona uma pedra a mão do jogador
      * @param rock
      */
-    public void addPlayerRock (DominoRock rock) {
-        playerRocks[rocksCounter++] = rock; //TODO: out off bounds quando vai comprar uma peça do monte
-    }
+    public void addPlayerRock (DominoRock rock) { playerRocks[rocksCounter++] = rock; }
 
     /**
      * Remove uma peça do array de peças que o jogador tem na mão

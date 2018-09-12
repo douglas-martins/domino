@@ -105,7 +105,6 @@ public class Domino {
     private void distributePlayersDominoRocks () {
         int indexRocks = 0;
         DominoRock[] rockCopy = Arrays.copyOf(dominoMount.getDominoRocks(), dominoMount.getDominoRocksCounter());
-
         for (DominoPlayer player : players) {
             for (int i = 0; i < 7; i++) {
                 player.addPlayerRock(rockCopy[indexRocks]);
