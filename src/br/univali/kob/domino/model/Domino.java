@@ -12,6 +12,7 @@ public class Domino {
     private int numberOfPlayersPass = 0;
 
     public Domino (int numberOfPlayers) {
+        validateNumberOfPlayers(numberOfPlayers);
         this.numberOfPlayers = numberOfPlayers;
         dominoMount = new DominoMount();
         dominoRound = new DominoRound();
@@ -37,42 +38,48 @@ public class Domino {
      */
     public void gameLoop () {
         int i = startPlayerIndex;
-        int numberOfRocksDrawer = 0;
-        int gameTableIndex = 0;
+        int gameRound = 0;
         while (!isGameOver()) {
-            numberOfRocksDrawer = 0;
+            players[i].setNumberOfRocksDrawerOnRound(0);
             if (i == startPlayerIndex) numberOfPlayersPass = 0;
             DominoRock rock = players[i].findAndReturnDominoRock(dominoRound);
-            if (rock == null) {
-                do {
-                    rock = dominoMount.drawDominoRock();
-                    if (rock != null) {
-                        numberOfRocksDrawer++;
-                        players[i].addPlayerRock(rock);
-                        rock = players[i].findAndReturnDominoRock(dominoRound);
-                    }
-                } while (dominoMount.getDominoRocksCounter() > 0 && rock == null);
-                if (rock == null) {
-                    numberOfPlayersPass++;
-                } else {
-                    gameTableIndex = dominoRound.addRockToGameTable(rock);
-                }
-            } else {
-                gameTableIndex = dominoRound.addRockToGameTable(rock);
-                if (players[i].getRocksCounter() < 1) {
-                    playerWinner = players[i];
-                }
-            }
-            int gameRound = dominoRound.getGameRound();
-            gameRound++;
-            dominoRound.setGameRound(gameRound);
-            debugDominoSimulate(players[i], rock, numberOfRocksDrawer, gameTableIndex);
+            dominoRound.setLastRockPlacedIndex(gameRoundCheckResults(rock, players[i]));
+            gameRound = dominoRound.getGameRound();
+            dominoRound.setGameRound(++gameRound);
+            showDominoSimulateRound(players[i], rock, players[i].getNumberOfRocksDrawerOnRound());
             if (i < numberOfPlayers - 1) {
                 i++;
             } else {
                 i = 0;
             }
         }
+    }
+
+    private int gameRoundCheckResults (DominoRock rock, DominoPlayer player) {
+        int gameTableIndex = 0;
+        int numberOfRocksDrawer = 0;
+        if (rock == null) {
+            do {
+                rock = dominoMount.drawDominoRock();
+                if (rock != null) {
+                    numberOfRocksDrawer++;
+                    player.setNumberOfRocksDrawerOnRound(numberOfRocksDrawer);
+                    player.addPlayerRock(rock);
+                    rock = player.findAndReturnDominoRock(dominoRound);
+                }
+            } while (dominoMount.getDominoRocksCounter() > 0 && rock == null);
+            if (rock == null) {
+                numberOfPlayersPass++;
+            } else {
+                gameTableIndex = dominoRound.addRockToGameTable(rock);
+            }
+        } else {
+            gameTableIndex = dominoRound.addRockToGameTable(rock);
+            if (player.getRocksCounter() < 1) {
+                playerWinner = player;
+            }
+        }
+        return gameTableIndex;
     }
 
     /**
@@ -83,10 +90,8 @@ public class Domino {
         return numberOfPlayersPass >= numberOfPlayers || playerWinner != null;
     }
 
-    private int getWinner () {
-        if (playerWinner != null) {
-            return 0;
-        }
+    private int getWinnerPoints () {
+        if (playerWinner != null) return 0;
 
         int minPoints = 100;
         for (DominoPlayer player : players) {
@@ -125,7 +130,13 @@ public class Domino {
         }
     }
 
-    private void debugDominoSimulate (DominoPlayer player, DominoRock rock, int numberOfRocksDrawer, int gameTableIndex) {
+    private void validateNumberOfPlayers (int players) {
+        if (players < 2 || players > 4) {
+            throw new IllegalArgumentException("O numero de jogadores pode ser 2, 3 ou 4");
+        }
+    }
+
+    private void showDominoSimulateRound (DominoPlayer player, DominoRock rock, int numberOfRocksDrawer) {
         System.out.println("Rodada: " + dominoRound.getGameRound());
         System.out.println("Jogador: " + player.getName());
         System.out.print("Mão: ");
@@ -137,7 +148,7 @@ public class Domino {
         System.out.print("Pedra usada: ");
         if (rock != null){
             System.out.print("[" + rock.getRockNumbers()[0] + ", " + rock.getRockNumbers()[1] + "] ");
-            if (gameTableIndex > 0) {
+            if (dominoRound.getLastRockPlacedIndex() > 0) {
                 System.out.println("(lado 1)");
             } else {
                 System.out.println("(lado 0)");
@@ -155,12 +166,12 @@ public class Domino {
         System.out.println();
         System.out.println("###################################################");
         if (playerWinner != null) {
-            System.out.println("Jogo acabou! " + playerWinner.getName() + " jogou todas suas pedras!");
+            System.out.println("\nJogo acabou! " + playerWinner.getName() + " jogou todas suas pedras!\n");
         } else if (numberOfPlayersPass >= numberOfPlayers) {
-            int points = getWinner();
-            System.out.println("Ninguém acabou com suas peças, porém não existe mais possibilidade de jogadas ou compra de pedras.\n" +
+            int points = getWinnerPoints();
+            System.out.println("\nNinguém acabou com suas peças, porém não existe mais possibilidade de jogadas ou compra de pedras.\n" +
                     "O jogador " + playerWinner.getName() + " ganhou com a menor pontuação entre os outros jogadores.\n" +
-                    "Sua pontuação foi de " + points + " pontos!");
+                    "Sua pontuação foi de " + points + " pontos!\n");
         }
     }
 }

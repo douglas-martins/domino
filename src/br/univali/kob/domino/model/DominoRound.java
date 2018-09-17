@@ -4,12 +4,29 @@ public class DominoRound {
     private DominoRock[] gameTable;
     private int gameTableCounter = 0;
     private int gameRound = 0;
+    private int lastRockPlacedIndex = 0;
 
     public DominoRound () {
         gameTable = new DominoRock[56];
         for (int i = 0; i < gameTable.length; i++) {
             gameTable[i] = new DominoRock(10, 10);
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getLastRockPlacedIndex() {
+        return lastRockPlacedIndex;
+    }
+
+    /**
+     *
+     * @param lastRockPlacedIndex
+     */
+    public void setLastRockPlacedIndex(int lastRockPlacedIndex) {
+        this.lastRockPlacedIndex = lastRockPlacedIndex;
     }
 
     /**

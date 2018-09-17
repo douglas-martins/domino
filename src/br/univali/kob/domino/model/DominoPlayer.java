@@ -4,6 +4,7 @@ public class DominoPlayer {
     private String name;
     private DominoRock[] playerRocks;
     private int rocksCounter = 0;
+    private int numberOfRocksDrawerOnRound = 0;
 
     public DominoPlayer () {
         playerRocks = new DominoRock[21];
@@ -42,6 +43,22 @@ public class DominoPlayer {
     }
 
     /**
+     *
+     * @return
+     */
+    public int getNumberOfRocksDrawerOnRound() {
+        return numberOfRocksDrawerOnRound;
+    }
+
+    /**
+     *
+     * @param numberOfRocksDrawerOnRound
+     */
+    public void setNumberOfRocksDrawerOnRound(int numberOfRocksDrawerOnRound) {
+        this.numberOfRocksDrawerOnRound = numberOfRocksDrawerOnRound;
+    }
+
+    /**
      * Adiciona uma pedra a mão do jogador
      * @param rock
      */
@@ -61,7 +78,7 @@ public class DominoPlayer {
      * @param dominoRound
      * @return retorna a pedra que pode ser jogada (null se não existir uma pedra)
      */
-    public DominoRock findAndReturnDominoRock (DominoRound dominoRound) {
+    public DominoRock findAndReturnDominoRock (DominoRound dominoRound) { // TODO: refactor
         DominoRock returnRock = null;
         if (dominoRound.getGameTable()[0].getRockNumbers()[0] > 6) {
             returnRock = playerRocks[getBiggerDominoRockIndex()];

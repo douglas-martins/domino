@@ -44,10 +44,10 @@ public class DominoMount {
 
     private void makeDominoRocks () {
         for (int i = 0; i < 7; i++) {
-            DominoRock rock = new DominoRock(i, i); // [0, 0] , [1, 1] ...
+            DominoRock rock = new DominoRock(i, i);
             addDominoRock(rock);
             for (int j = (i + 1); j < 7; j++) {
-                rock = new DominoRock(i, j); // [0, 1] , [0, 2] ... / [1, 2] , [1, 3] ...
+                rock = new DominoRock(i, j);
                 addDominoRock(rock);
             }
         }
