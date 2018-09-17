@@ -14,16 +14,16 @@ public class DominoRound {
     }
 
     /**
-     *
-     * @return
+     * Retorna o index da ultima pedra colocada na mesa
+     * @return lastRockPlacedIndex: posição no array da mesa, da ultima pedra colocada
      */
     public int getLastRockPlacedIndex() {
         return lastRockPlacedIndex;
     }
 
     /**
-     *
-     * @param lastRockPlacedIndex
+     * Atribui o valor do index no array da mesa da ultima pedra colocada
+     * @param lastRockPlacedIndex posição no array da mesa, da ultima pedra colocada
      */
     public void setLastRockPlacedIndex(int lastRockPlacedIndex) {
         this.lastRockPlacedIndex = lastRockPlacedIndex;
@@ -31,7 +31,7 @@ public class DominoRound {
 
     /**
      * Retorna o valor de gameRound
-     * @return gameRound
+     * @return gameRound: valor que define em qual rodada o jogo esta
      */
     public int getGameRound() {
         return gameRound;
@@ -39,11 +39,16 @@ public class DominoRound {
 
     /**
      * Modifica o valor de gameRound
-     * @param gameRound
+     * @param gameRound: atribui um valor para qual rodada o jogo esta
      */
     public void setGameRound(int gameRound) {
         this.gameRound = gameRound;
     }
+
+    /**
+     * Adiciona +1 em gameRound (gameRound++)
+     */
+    public void addOneGameRound () { ++this.gameRound; }
 
     /**
      * Retorna o valor da gameTableCounter
@@ -53,7 +58,7 @@ public class DominoRound {
 
     /**
      * Retorna a mesa do jogo
-     * @return
+     * @return gameTable: retorna o array da mesa do jogo
      */
     public DominoRock[] getGameTable() {
         return gameTable;
@@ -85,6 +90,11 @@ public class DominoRound {
         return -1;
     }
 
+    /**
+     * Verifica se a pedra pode ser encaixa na mesa
+     * @param rock: pedra que será verificada se encaixa
+     * @return true or false: true se encaixa e false se não encaixa
+     */
     public boolean isDominoRockFitOnGameTable (DominoRock rock) {
         return rock.getRockNumbers()[1] == gameTable[0].getRockNumbers()[0] ||
                 rock.getRockNumbers()[0] == gameTable[gameTableCounter].getRockNumbers()[1];

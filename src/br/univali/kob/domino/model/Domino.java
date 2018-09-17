@@ -27,7 +27,7 @@ public class Domino {
 
     /**
      * Retorna o valor de players
-     * @return players
+     * @return players: array de jogadores
      */
     public DominoPlayer[] getPlayers () {
         return players;
@@ -38,14 +38,12 @@ public class Domino {
      */
     public void gameLoop () {
         int i = startPlayerIndex;
-        int gameRound = 0;
         while (!isGameOver()) {
             players[i].setNumberOfRocksDrawerOnRound(0);
             if (i == startPlayerIndex) numberOfPlayersPass = 0;
             DominoRock rock = players[i].findAndReturnDominoRock(dominoRound);
             dominoRound.setLastRockPlacedIndex(gameRoundCheckResults(rock, players[i]));
-            gameRound = dominoRound.getGameRound();
-            dominoRound.setGameRound(++gameRound);
+            dominoRound.addOneGameRound();
             showDominoSimulateRound(players[i], rock, players[i].getNumberOfRocksDrawerOnRound());
             if (i < numberOfPlayers - 1) {
                 i++;
@@ -84,7 +82,7 @@ public class Domino {
 
     /**
      * Retorna o estado atual do jogo
-     * @return boolean com estado do jogo
+     * @return boolean: com estado do jogo
      */
     public boolean isGameOver () {
         return numberOfPlayersPass >= numberOfPlayers || playerWinner != null;
@@ -120,12 +118,23 @@ public class Domino {
     }
 
     private void setPlayerIndexStart () {
-        DominoPlayer bigger = players[0];
-        for (int i = 1; i < numberOfPlayers; i++) {
-            if (players[i].getPlayerRocks()[players[i].getBiggerDominoRockIndex()].getRockNumbers()[0] >
-                    bigger.getPlayerRocks()[bigger.getBiggerDominoRockIndex()].getRockNumbers()[0]) {
-                bigger = players[i];
-                startPlayerIndex = i;
+        DominoPlayer bigger = new DominoPlayer();
+        bigger.addPlayerRock(new DominoRock(-1, -1));
+        for (int i = 0; i < numberOfPlayers; i++) {
+            DominoRock actualPlayerRock = players[i].getPlayerRocks()[players[i].getBiggerDominoRockIndex()];
+            DominoRock biggerPlayerRock = bigger.getPlayerRocks()[bigger.getBiggerDominoRockIndex()];
+            if (biggerPlayerRock.getRockNumbers()[0] == biggerPlayerRock.getRockNumbers()[1]
+                    && actualPlayerRock.getRockNumbers()[0] == actualPlayerRock.getRockNumbers()[1]) {
+                if (actualPlayerRock.getRocksNumberSum() > biggerPlayerRock.getRocksNumberSum()) {
+                    bigger = players[i];
+                    startPlayerIndex = i;
+                }
+            } else {
+                if (actualPlayerRock.getRockNumbers()[0] > biggerPlayerRock.getRockNumbers()[0] &&
+                        biggerPlayerRock.getRockNumbers()[0] != biggerPlayerRock.getRockNumbers()[1]) {
+                    bigger = players[i];
+                    startPlayerIndex = i;
+                }
             }
         }
     }

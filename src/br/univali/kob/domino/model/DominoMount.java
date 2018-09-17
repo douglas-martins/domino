@@ -11,7 +11,7 @@ public class DominoMount {
 
     /**
      * Retorna o valor de gameRocks
-     * @return gameRocks
+     * @return gameRocks: array de pedras que ainda estão no monte
      */
     public DominoRock[] getDominoRocks () {
         return gameRocks;
@@ -19,7 +19,7 @@ public class DominoMount {
 
     /**
      * Retorna o valor de dominoRocksCounter
-     * @return dominoRocksCounter
+     * @return dominoRocksCounter: retorna a quantidade real de pedras que ainda tem no monte
      */
     public int getDominoRocksCounter () {
         return dominoRocksCounter;
@@ -27,7 +27,7 @@ public class DominoMount {
 
     /**
      * Remove um elemento do array de peças a comprar
-     * @param elementIndex
+     * @param elementIndex: index no array de pedras do monte que sera removido.
      */
     public void removeDominoRock (int elementIndex) {
         gameRocks = ArraysHelper.removeElement(gameRocks, elementIndex, dominoRocksCounter);
@@ -36,10 +36,14 @@ public class DominoMount {
 
     /**
      * Compra uma pedra do monte
-     * @return retorna a pedra comprada (null se não exister mais pedras no monte
+     * @return DominoRock: retorna a pedra comprada (null se não exister mais pedras no monte)
      */
     public DominoRock drawDominoRock () {
         return dominoRocksCounter > 0 ? gameRocks[dominoRocksCounter--] : null;
+    }
+
+    private void addDominoRock (DominoRock rock) {
+        gameRocks[dominoRocksCounter++] = rock;
     }
 
     private void makeDominoRocks () {
@@ -52,9 +56,5 @@ public class DominoMount {
             }
         }
         ArraysHelper.shuffleElements(gameRocks);
-    }
-
-    private void addDominoRock (DominoRock rock) {
-        gameRocks[dominoRocksCounter++] = rock;
     }
 }
